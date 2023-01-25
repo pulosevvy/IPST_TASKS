@@ -10,18 +10,24 @@ const main = () => {
         
         result = result + state;
 
-        if (result.charAt(0) == '0') 
-        result = result.slice(1);
+        if (result.charAt(0) == '0' || result.charAt(0) == '=') {
+            result = result.slice(1);
+        }
 
-        if (state === '.' && result.includes('.')) return
+        if (state == '.' && result.includes('.')) {
+            return
+        } 
 
         if(result.includes('АС')) {
             result = 0; 
         } else if (result.includes('С')) {
             result = result.slice(0, -2);
+            if(!result.length) {
+                result = 0;
+            }
         }
 
-        print(result)
+        print(parseFloat(result))
 
         if (state == '+' || state == '-' || state == '/' || state == 'x') { 
             operation = state;
