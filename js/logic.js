@@ -55,35 +55,3 @@ const main = () => {
 }
 
 export default main
-
-
-
-        
-            // switch(operation) {
-            //     case '+':
-            //         proccess = prevOperand + currentOperand
-            //         break
-            //     case '-':
-            //         proccess = prevOperand - currentOperand
-            //         break
-            //     case 'x':
-            //         proccess = prevOperand * currentOperand
-            //         break
-            //     case '/':
-            //         proccess = prevOperand / currentOperand
-            //         break
-            
-            //     default: return
-            // }
-        
-            // result = proccess;
-
-            
-
-            // currentOperand = 0;
-            // prevOperand = 0;
-        
-            // console.log("operation:" + operation)
-            // console.log("state:" + state)
-            // console.log("result:" + result)
-            // console.log("prevOperand:" + prevOperand)
