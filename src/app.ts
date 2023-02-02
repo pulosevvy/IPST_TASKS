@@ -1,11 +1,14 @@
 import express, { Express } from 'express';
 import {  Server  } from 'http';
 import { UserController } from "./users/users.controller";
-import { ExceptionFilter } from "./errors/exception.filter";
 import { inject, injectable } from "inversify";
 import { TYPES } from "./types";
 import 'reflect-metadata'
 import { json } from "body-parser";
+import {IConfigService} from "./config/config.service.interface";
+import {IExceptionFilter} from "./errors/exception.filter.interface";
+import {PrismaService} from "./database/prisma.service";
+import {AuthMiddleware} from "./common/auth.middleware";
 
 @injectable()
 export class App {
@@ -15,14 +18,16 @@ export class App {
 
     constructor(
         @inject(TYPES.UserController) private userController: UserController,
-        @inject(TYPES.ExceptionFilter) private exceptionFilter: ExceptionFilter,
+        @inject(TYPES.ExceptionFilter) private exceptionFilter: IExceptionFilter,
+        @inject(TYPES.ConfigService) private configService: IConfigService,
+        @inject(TYPES.PrismaService) private prismaService: PrismaService
     ) {
         this.app = express();
         this.port = 8000;
     }
 
     useMiddleware(): void {
-        this.app.use(json())
+        this.app.use(json());
     }
 
     useRoutes(): void {
@@ -37,6 +42,7 @@ export class App {
         this.useMiddleware();
         this.useRoutes();
         this.useExceptionFilters();
+        await this.prismaService.connect();
         this.server = this.app.listen(this.port);
         console.log(`Server starting on http://localhost:${this.port}`)
     }
