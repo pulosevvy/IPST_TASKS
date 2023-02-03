@@ -1,6 +1,6 @@
 import {IsEmail, IsOptional, IsString, Matches, MaxLength, MinLength} from "class-validator";
 
-export class UserRegisterDto {
+export class UserCreateDto {
     @MinLength(2, {message: 'Минимум 2 символа'})
     @MaxLength(255, {message: 'Максимум 255 символов'})
     @IsString({message: 'Не указано имя'})

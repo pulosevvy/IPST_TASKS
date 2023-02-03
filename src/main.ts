@@ -12,14 +12,21 @@ import {IConfigService} from "./config/config.service.interface";
 import {PrismaService} from "./database/prisma.service";
 import {IUsersRepository} from "./users/users.repository.interface";
 import {UsersRepository} from "./users/users.repository";
+import {AuthService} from "./auth/auth.service";
+import {AuthController} from "./auth/auth.controller";
+import {JwtService} from "./auth/jwt.service";
+
 
 export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
     bind<IExceptionFilter>(TYPES.ExceptionFilter).to(ExceptionFilter).inSingletonScope();
     bind<IUserController>(TYPES.UserController).to(UserController).inSingletonScope();
-    bind<IUserService>(TYPES.UserService).to(UserService).inSingletonScope();
+    bind<UserService>(TYPES.UserService).to(UserService).inSingletonScope();
     bind<PrismaService>(TYPES.PrismaService).to(PrismaService).inSingletonScope();
     bind<IConfigService>(TYPES.ConfigService).to(ConfigService).inSingletonScope();
     bind<IUsersRepository>(TYPES.UsersRepository).to(UsersRepository).inSingletonScope();
+    bind<AuthService>(TYPES.AuthService).to(AuthService).inSingletonScope();
+    bind<AuthController>(TYPES.AuthController).to(AuthController);
+    bind<JwtService>(TYPES.JwtService).to(JwtService);
     bind<App>(TYPES.Application).to(App).inSingletonScope();
 });
 

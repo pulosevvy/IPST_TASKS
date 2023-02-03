@@ -8,7 +8,9 @@ import { json } from "body-parser";
 import {IConfigService} from "./config/config.service.interface";
 import {IExceptionFilter} from "./errors/exception.filter.interface";
 import {PrismaService} from "./database/prisma.service";
-import {AuthMiddleware} from "./common/auth.middleware";
+import cookieParser from "cookie-parser";
+import cors from 'cors';
+import {AuthController} from "./auth/auth.controller";
 
 @injectable()
 export class App {
@@ -20,7 +22,8 @@ export class App {
         @inject(TYPES.UserController) private userController: UserController,
         @inject(TYPES.ExceptionFilter) private exceptionFilter: IExceptionFilter,
         @inject(TYPES.ConfigService) private configService: IConfigService,
-        @inject(TYPES.PrismaService) private prismaService: PrismaService
+        @inject(TYPES.PrismaService) private prismaService: PrismaService,
+        @inject(TYPES.AuthController) private authController: AuthController
     ) {
         this.app = express();
         this.port = 8000;
@@ -28,10 +31,13 @@ export class App {
 
     useMiddleware(): void {
         this.app.use(json());
+        this.app.use(cookieParser());
+        this.app.use(cors());
     }
 
     useRoutes(): void {
         this.app.use('/users', this.userController.router);
+        this.app.use('/auth', this.authController.router);
     }
 
     useExceptionFilters(): void {

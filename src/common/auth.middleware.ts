@@ -14,7 +14,6 @@ export class AuthMiddleware implements IMiddleware {
 
 		if (req.headers.authorization) {
 			const accessToken = req.headers.authorization.split(' ')[1];
-			// const verification = verify(accessToken, this.secret) as IDataStoredToken;
 
 			//нужно явно побольше поработать с TS. Payload с типом any такое себе, но так работает и правильно присваивает
 			verify(accessToken, this.secret, (err, payload: any) => {
