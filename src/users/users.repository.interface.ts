@@ -4,4 +4,5 @@ import {UserModel} from "@prisma/client";
 export interface IUsersRepository {
     create: (user: User) => Promise<UserModel>;
     find: (email: string, username?: string) => Promise<UserModel | null>;
+    updateConfirm: (userId: number) => Promise<UserModel | null>;
 }

@@ -10,9 +10,10 @@ import {HTTPError} from "../errors/http-error.class";
 import {IUserService} from "../users/users.service.interface";
 import {JwtService} from "./jwt.service";
 import {IConfigService} from "../config/config.service.interface";
+import {IAuthController} from "./auth.controller.interface";
 
 @injectable()
-export class AuthController extends BaseController {
+export class AuthController extends BaseController implements IAuthController{
 
     constructor(
         @inject(TYPES.AuthService) private authService: AuthService,
@@ -43,15 +44,17 @@ export class AuthController extends BaseController {
         ])
     }
 
-    async register(req: Request<{}, {}, UserCreateDto>, res: Response, next: NextFunction) {
+    async register(req: Request<{}, {}, UserCreateDto>, res: Response, next: NextFunction): Promise<void> {
         const result = await this.userService.createUser(req.body);
+
         if (!result) {
             return next(new HTTPError(422, 'Такой пользователь уже существует', 'register'))
         }
+
         this.ok(res, {id: result.id, email: result.email});
     }
 
-    async login(req: Request<{}, {}, LoginDto>, res: Response, next: NextFunction) {
+    async login(req: Request<{}, {}, LoginDto>, res: Response, next: NextFunction): Promise<void> {
         const result = await this.authService.login(req.body);
 
         if (!result) {
@@ -66,7 +69,7 @@ export class AuthController extends BaseController {
     }
 
 
-    async refreshToken(req: Request, res: Response, next: NextFunction) {
+    async refreshToken(req: Request, res: Response, next: NextFunction): Promise<void> {
         const refreshToken = req.cookies['refreshToken'];
 
         if(!refreshToken) {

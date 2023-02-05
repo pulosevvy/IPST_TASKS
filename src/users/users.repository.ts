@@ -27,4 +27,15 @@ export class UsersRepository implements IUsersRepository{
         // return this.prismaService.client.userModel.findFirst({where: {email: email}});
         return this.prismaService.client.userModel.findFirst({where: {OR: [{email: email}, {username: username}]}});
     }
+
+    async updateConfirm(userId: number): Promise<UserModel | null> {
+        return this.prismaService.client.userModel.update({
+            where: {
+                id: userId
+            },
+            data: {
+                is_confirmed: true
+            }
+        })
+    }
 }
