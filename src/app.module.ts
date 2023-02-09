@@ -6,6 +6,7 @@ import { ConfigModule } from "@nestjs/config";
 import { FoldersModule } from './folders/folders.module';
 import { SequelizeModule } from "@nestjs/sequelize";
 import { User } from "./users/users.model";
+import { Folder } from "./folders/folders.model";
 
 
 @Module({
@@ -18,16 +19,13 @@ import { User } from "./users/users.model";
           username: process.env.POSTGRES_USERNAME,
           password: process.env.POSTGRES_PASSWORD,
           database: process.env.POSTGRESS_DATABASE,
-          models: [User],
+          models: [User, Folder],
           autoLoadModels: true
       }),
       UsersModule,
       AuthModule,
       FilesModule,
       FoldersModule,
-
-  ],
-  controllers: [],
-  providers: [],
+  ]
 })
 export class AppModule {}

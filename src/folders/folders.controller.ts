@@ -1,4 +1,9 @@
 import { Controller } from '@nestjs/common';
+import { FoldersService } from "./folders.service";
 
 @Controller('folders')
-export class FoldersController {}
+export class FoldersController {
+
+    constructor(private folderService: FoldersService) {}
+
+}

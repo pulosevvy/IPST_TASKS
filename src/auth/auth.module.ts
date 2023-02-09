@@ -4,11 +4,12 @@ import { AuthService } from './auth.service';
 import { UsersModule } from "../users/users.module";
 import { JwtModule } from "@nestjs/jwt";
 import { ConfigModule } from "@nestjs/config";
+import { FoldersModule } from "../folders/folders.module";
 
 @Module({
   imports: [
-      ConfigModule,
       UsersModule,
+      FoldersModule,
       JwtModule.register({
             secret: process.env.PRIVATE_KEY || 'secret',
             signOptions: {

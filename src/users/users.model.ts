@@ -1,11 +1,12 @@
-import { Column, DataType, Model, Table } from "sequelize-typescript";
+import { Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
+import { Folder } from "../folders/folders.model";
 
 interface UserAttributes {
     login: string,
     password: string
 }
 
-@Table
+@Table({tableName: 'users'})
 export class User extends Model<User, UserAttributes> {
     @Column({type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})
     id: number
@@ -15,4 +16,7 @@ export class User extends Model<User, UserAttributes> {
 
     @Column({type: DataType.STRING, allowNull: false})
     password: string
+
+    @HasMany(() => Folder)
+    folders: Folder[];
 }

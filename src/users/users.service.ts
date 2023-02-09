@@ -8,7 +8,9 @@ import { ALREADY_USER_ERROR } from "./users.constants";
 @Injectable()
 export class UsersService {
 
-    constructor(@InjectModel(User) private userModel: typeof User) {}
+    constructor(
+        @InjectModel(User) private userModel: typeof User,
+    ) {}
 
     async createUser(dto: CreateUserDto) {
         const check = await this.findUserByLogin(dto.login);

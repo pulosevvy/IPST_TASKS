@@ -7,21 +7,24 @@ import { compare } from 'bcryptjs';
 import { INVALID_PASSWORD_ERROR } from "./auth.constants";
 import { JwtService } from "@nestjs/jwt";
 import { User } from "../users/users.model";
+import { FoldersService } from "../folders/folders.service";
 
 @Injectable()
 export class AuthService {
 
     constructor(
         private userService: UsersService,
-        private jwtService: JwtService
+        private jwtService: JwtService,
+        private folderService: FoldersService
     ) {}
 
     async register(dto: CreateUserDto) {
-        const checkUser = await this.userService.findUserByLogin(dto.login);
+        const checkUser = await this.checkUser(dto.login);
         if(checkUser) {
             throw new BadRequestException(ALREADY_USER_ERROR);
         }
         const newUser = await this.userService.createUser(dto);
+        await this.folderService.createRootFolder(newUser.id);
         const token = await this.generateToken(newUser);
         return {user: newUser.login, token: token}
     }
@@ -36,7 +39,7 @@ export class AuthService {
     }
 
     async validateLoginUser(dto: LoginUserDto) {
-        const user = await this.userService.findUserByLogin(dto.login);
+        const user = await this.checkUser(dto.login);
         if(!user) {
             throw new BadRequestException(USER_NOT_EXISTS);
         }
@@ -47,12 +50,13 @@ export class AuthService {
         return user;
     }
 
-    async generateToken(user: User) {
+    private async generateToken(user: User) {
         const payload = {login: user.login}
         return this.jwtService.sign(payload);
     }
 
-
-
+    private async checkUser(login: string) {
+        return await this.userService.findUserByLogin(login);
+    }
 
 }
