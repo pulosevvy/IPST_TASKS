@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { Folder } from "./folders.model";
 import { InjectModel } from "@nestjs/sequelize";
 import { FolderCreateDto } from "./dto/folder-create.dto";
-import { ACCESS_DENIED_ERROR, FOLDER_NOT_FOUND_ERROR } from "./folders.constants";
+import { ACCESS_DENIED_ERROR, FOLDER_NOT_FOUND_ERROR, PARENT_FOLDER_NOT_EXISTS } from "./folders.constants";
 
 @Injectable()
 export class FoldersService {
@@ -17,7 +17,6 @@ export class FoldersService {
 
     async createFolder(dto: FolderCreateDto, userId: number) {
         await this.validateParentFolder(dto.parentId, userId);
-
         return await this.createFolderDb(dto, userId);
     }
 
@@ -37,31 +36,49 @@ export class FoldersService {
         return { folder: folder, childrenFolders: childrenFolders };
     }
 
+    async deleteFolder(folderId: number, userId: number) {
+        const searchDeletedFolder = await this.getFoldersById(folderId);
+        if(!searchDeletedFolder) {
+            throw new BadRequestException(FOLDER_NOT_FOUND_ERROR);
+        }
+        await this.deleteFolderDb(folderId);
+
+        return {message: 'Папка удалена'}
+    }
+
     private async validateParentFolder(parentId: number, userId: number) {
-        const folder = await this.getFolderById(parentId);
-        if (!folder) {
+        const parentFolder = await this.getFolderById(parentId);
+        if (!parentFolder) {
+            throw new BadRequestException(PARENT_FOLDER_NOT_EXISTS);
+        }
+        if(parentFolder.userId !== userId) {
             throw new BadRequestException(ACCESS_DENIED_ERROR);
         }
-        if(folder.userId !== userId) {
-            throw new BadRequestException(ACCESS_DENIED_ERROR);
-        }
-        return folder;
+        return parentFolder;
     }
 
     //repository
-    async getFoldersByUserId(userId: number) {
+    private async getFoldersByUserId(userId: number) {
         return await this.folderModel.findAll({where: {userId: userId}})
     }
 
-    async getFolderById(folderId: number) {
+    private async getFolderById(folderId: number) {
         return await this.folderModel.findOne({where: {id: folderId}})
     }
 
-    async findChildrenFolders(folderId: number) {
+    private async getFoldersById(folderId: number) {
+        return await this.folderModel.findAll({where: {id: folderId}})
+    }
+
+    private async findChildrenFolders(folderId: number) {
         return await this.folderModel.findAll({where: {parentId: folderId}});
     }
 
-    async createFolderDb(dto: FolderCreateDto, userId: number) {
+    private async createFolderDb(dto: FolderCreateDto, userId: number) {
         return await this.folderModel.create({ ...dto, userId: userId} );
+    }
+
+    private async deleteFolderDb(folderId: number) {
+        return await this.folderModel.destroy({where: {id: folderId}});
     }
 }

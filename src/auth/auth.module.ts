@@ -13,7 +13,7 @@ import { FoldersModule } from "../folders/folders.module";
             secret: process.env.PRIVATE_KEY || 'secret',
             signOptions: {
             algorithm: 'HS256',
-            expiresIn: '15min'
+            expiresIn: '15h'
             },
         })
   ],
