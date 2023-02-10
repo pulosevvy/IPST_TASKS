@@ -25,5 +25,4 @@ export class Folder extends Model<Folder, FolderAttributes> {
     @BelongsTo(() => User)
     owner: User;
 
-
 }
