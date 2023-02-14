@@ -2,7 +2,12 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { Folder } from "./folders.model";
 import { InjectModel } from "@nestjs/sequelize";
 import { FolderCreateDto } from "./dto/folder-create.dto";
-import { ACCESS_DENIED_ERROR, FOLDER_NOT_FOUND_ERROR, PARENT_FOLDER_NOT_EXISTS } from "./folders.constants";
+import {
+    ACCESS_DENIED_ERROR,
+    FOLDER_NOT_FOUND_ERROR,
+    PARENT_DESTROY_ERROR,
+    PARENT_FOLDER_NOT_EXISTS
+} from "./folders.constants";
 
 @Injectable()
 export class FoldersService {
@@ -37,11 +42,19 @@ export class FoldersService {
     }
 
     async deleteFolder(folderId: number, userId: number) {
-        const searchDeletedFolder = await this.getFoldersById(folderId);
+        const searchDeletedFolder = await this.getFolderById(folderId);
         if(!searchDeletedFolder) {
             throw new BadRequestException(FOLDER_NOT_FOUND_ERROR);
         }
+        if(searchDeletedFolder.name == 'root') {
+            throw new BadRequestException(PARENT_DESTROY_ERROR);
+        }
+        if(searchDeletedFolder.userId !== userId) {
+            throw new BadRequestException(ACCESS_DENIED_ERROR);
+        }
         await this.deleteFolderDb(folderId);
+
+        const childFolders = await this.findChildrenFolders(folderId);
 
         return {message: 'Папка удалена'}
     }
