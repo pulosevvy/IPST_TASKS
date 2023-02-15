@@ -1,8 +1,9 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { CreateUserDto } from "./dto/create-user.dto";
 import { InjectModel } from "@nestjs/sequelize";
-import { User } from "./users.model";
 import * as bcrypt from "bcryptjs";
+
+import { CreateUserDto } from "./dto/create-user.dto";
+import { User } from "./users.model";
 import { ALREADY_USER_ERROR } from "./users.constants";
 
 @Injectable()

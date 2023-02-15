@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { Folder } from "./folders.model";
 import { InjectModel } from "@nestjs/sequelize";
+
+import { Folder } from "./folders.model";
 import { FolderCreateDto } from "./dto/folder-create.dto";
 import {
     ACCESS_DENIED_ERROR,
@@ -71,27 +72,27 @@ export class FoldersService {
     }
 
     //repository
-    private async getFoldersByUserId(userId: number) {
+     async getFoldersByUserId(userId: number) {
         return await this.folderModel.findAll({where: {userId: userId}})
     }
 
-    private async getFolderById(folderId: number) {
+    async getFolderById(folderId: number) {
         return await this.folderModel.findOne({where: {id: folderId}})
     }
 
-    private async getFoldersById(folderId: number) {
+    async getFoldersById(folderId: number) {
         return await this.folderModel.findAll({where: {id: folderId}})
     }
 
-    private async findChildrenFolders(folderId: number) {
+    async findChildrenFolders(folderId: number) {
         return await this.folderModel.findAll({where: {parentId: folderId}});
     }
 
-    private async createFolderDb(dto: FolderCreateDto, userId: number) {
+    async createFolderDb(dto: FolderCreateDto, userId: number) {
         return await this.folderModel.create({ ...dto, userId: userId} );
     }
 
-    private async deleteFolderDb(folderId: number) {
+    async deleteFolderDb(folderId: number) {
         return await this.folderModel.destroy({where: {id: folderId}});
     }
 }

@@ -1,12 +1,13 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
+import { compare } from 'bcryptjs';
+import { JwtService } from "@nestjs/jwt";
+
 import { CreateUserDto } from "../users/dto/create-user.dto";
 import { UsersService } from "../users/users.service";
+import { User } from "../users/users.model";
 import { ALREADY_USER_ERROR, USER_NOT_EXISTS } from "../users/users.constants";
 import { LoginUserDto } from "./dto/user-login.dto";
-import { compare } from 'bcryptjs';
 import { INVALID_PASSWORD_ERROR } from "./auth.constants";
-import { JwtService } from "@nestjs/jwt";
-import { User } from "../users/users.model";
 import { FoldersService } from "../folders/folders.service";
 
 @Injectable()
