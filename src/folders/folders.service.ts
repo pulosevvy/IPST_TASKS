@@ -10,6 +10,7 @@ import {
     PARENT_FOLDER_NOT_EXISTS
 } from "./folders.constants";
 import { File } from "../files/files.model";
+import { FolderUpdateDto } from "./dto/folder-update.dto";
 
 @Injectable()
 export class FoldersService {
@@ -33,26 +34,30 @@ export class FoldersService {
 
     async getOneFolder(folderId: number, userId: number) {
         const folder = await this.getFolderById(folderId);
-        if(!folder) {
+        if(!folder || folder.userId !== userId) {
             throw new BadRequestException(FOLDER_NOT_FOUND_ERROR);
-        }
-        if (folder.userId !== userId) {
-            throw new BadRequestException(ACCESS_DENIED_ERROR);
         }
         const childrenFolders = await this.findChildrenFolders(folderId)
         return { folder, childrenFolders };
     }
 
+    async updateFolder(id: number, dto: FolderUpdateDto, userId: number) {
+        const folder = await this.getFolderById(id);
+        if(!folder || folder.userId !== userId) {
+            throw new BadRequestException(FOLDER_NOT_FOUND_ERROR);
+        }
+        await this.updateFolderDb(id, dto);
+        const updated = await this.getFolderById(id);
+        return updated;
+    }
+
     async deleteFolder(folderId: number, userId: number) {
         const searchDeletedFolder = await this.getFolderById(folderId);
-        if(!searchDeletedFolder) {
+        if(!searchDeletedFolder || searchDeletedFolder.userId !== userId) {
             throw new BadRequestException(FOLDER_NOT_FOUND_ERROR);
         }
         if(searchDeletedFolder.name == 'root') {
             throw new BadRequestException(PARENT_DESTROY_ERROR);
-        }
-        if(searchDeletedFolder.userId !== userId) {
-            throw new BadRequestException(ACCESS_DENIED_ERROR);
         }
         await this.deleteFolderDb(folderId);
 
@@ -91,6 +96,10 @@ export class FoldersService {
 
     async createFolderDb(dto: FolderCreateDto, userId: number) {
         return await this.folderModel.create({ ...dto, userId: userId} );
+    }
+
+    async updateFolderDb(id: number,dto: FolderUpdateDto) {
+        return await this.folderModel.update(dto, {where: {id: id}})
     }
 
     async deleteFolderDb(folderId: number) {

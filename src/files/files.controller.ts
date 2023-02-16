@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Param, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { FilesService } from "./files.service";
 import { CreateFileDto } from "./dto/create-file.dto";
@@ -15,6 +15,7 @@ export class FilesController {
 
     @ApiOperation({summary: 'Добавление файла'})
     @ApiResponse({status: 201, type: File})
+    @ApiParam({ name: 'file', type: String })
     @UseGuards(AuthGuard)
     @UseInterceptors(FileInterceptor('name'))
     @Post()

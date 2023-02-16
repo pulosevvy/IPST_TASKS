@@ -1,12 +1,12 @@
 import { BadRequestException, HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
+import {  ensureDir, writeFile, remove  } from "fs-extra";
 
 import { CreateFileDto } from "./dto/create-file.dto";
 import { File } from "./files.model";
 import { FoldersService } from "../folders/folders.service";
 import { ACCESS_DENIED_ERROR, FOLDER_NOT_FOUND_ERROR } from "../folders/files.constants";
-import {  ensureDir, writeFile  } from "fs-extra";
-import { path } from "app-root-path";
+import { FILE_REMOVE_ERROR } from "./files.constants";
 
 @Injectable()
 export class FilesService {
@@ -15,16 +15,6 @@ export class FilesService {
         @InjectModel(File) private fileModel: typeof File,
         private folderService: FoldersService
     ) {}
-    
-    async uploadFile(file) {
-        const folder = `${__dirname}/../uploads`;
-        await ensureDir(folder);
-        await writeFile(`${folder}/${file.originalname}`, file.buffer);
-        const filepath = `uploads/${file.originalname}`
-        const fileName = file.originalname;
-
-        return {filepath, fileName};
-    }
 
     async createFile(dto: CreateFileDto, userId: number, file: any) {
          const folder = await this.folderService.getFolderById(dto.folderId);
@@ -46,9 +36,29 @@ export class FilesService {
         const folder = await this.folderService.getFolderById(file.folderId);
 
         if(folder.userId !== userId) {
-            throw new BadRequestException(ACCESS_DENIED_ERROR);
+            throw new BadRequestException(FOLDER_NOT_FOUND_ERROR);
         }
-        await this.deleteFileDb(fileId);
+        await this.removeFile(file.name);
+        await this.deleteFileDb(file.id);
+    }
+
+
+    async uploadFile(file) {
+        const folder = `${__dirname}/../uploads`;
+        await ensureDir(folder);
+        await writeFile(`${folder}/${file.originalname}`, file.buffer);
+        const filepath = `uploads/${file.originalname}`
+        const fileName = file.originalname;
+
+        return {filepath, fileName};
+    }
+
+    async removeFile(name: string) {
+        try {
+            await remove(`${__dirname}/../uploads/${name}`)
+        } catch (e) {
+            throw new HttpException(FILE_REMOVE_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     //repository
