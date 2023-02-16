@@ -1,0 +1,1 @@
+export const FILE_UPLOAD_ERROR = 'При записи файла произошла ошибка';

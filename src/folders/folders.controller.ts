@@ -5,6 +5,8 @@ import { FoldersService } from "./folders.service";
 import { FolderCreateDto } from "./dto/folder-create.dto";
 import { AuthGuard } from "../auth/guards/auth.guard";
 import { Folder } from "./folders.model";
+import { File } from "../files/files.model";
+import { GetOneFolderResponse} from "./response/get-one-folder.response";
 
 @ApiTags('Папки')
 @Controller('folders')
@@ -29,7 +31,7 @@ export class FoldersController {
     }
 
     @ApiOperation({summary: 'Получение одной папки'})
-    @ApiResponse({status: 200, type: Folder})
+    @ApiResponse({status: 200, type: GetOneFolderResponse })
     @UseGuards(AuthGuard)
     @Get(':id')
     async getOneFolder(@Param('id') id: number, @Req() req) {

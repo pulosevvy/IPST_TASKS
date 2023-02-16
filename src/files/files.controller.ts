@@ -1,13 +1,14 @@
-import { Body, Controller, Delete, Param, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Param, Post, Req, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { FilesService } from "./files.service";
 import { CreateFileDto } from "./dto/create-file.dto";
 import { File } from "./files.model";
 import { AuthGuard } from "../auth/guards/auth.guard";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 @ApiTags('Файлы')
-@Controller('files')
+@Controller('folders/files')
 export class FilesController {
 
     constructor(private filesService: FilesService) {}
@@ -15,9 +16,14 @@ export class FilesController {
     @ApiOperation({summary: 'Добавление файла'})
     @ApiResponse({status: 201, type: File})
     @UseGuards(AuthGuard)
+    @UseInterceptors(FileInterceptor('name'))
     @Post()
-    async create(@Body() dto: CreateFileDto, @Req() req) {
-        return this.filesService.createFile(dto, req.user.id);
+    async create(
+        @UploadedFile() file: Express.Multer.File,
+        @Body() dto: CreateFileDto,
+        @Req() req
+    ) {
+        return this.filesService.createFile(dto, req.user.id,file);
     }
 
     @ApiOperation({summary: 'Удаление файла'})

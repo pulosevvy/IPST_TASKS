@@ -7,7 +7,7 @@ import { File } from "../files/files.model";
 interface FolderAttributes {
     name: string,
     userId: number,
-    parentId: number
+    parentId: number,
 }
 
 @Table({tableName: 'folders'})

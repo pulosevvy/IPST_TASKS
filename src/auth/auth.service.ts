@@ -27,7 +27,10 @@ export class AuthService {
         const newUser = await this.userService.createUser(dto);
         await this.folderService.createRootFolder(newUser.id);
         const token = await this.generateToken(newUser);
-        return {user: newUser.login, token: token}
+        return {
+            user: newUser.login,
+            token: token
+        }
     }
 
     async login(dto: LoginUserDto) {

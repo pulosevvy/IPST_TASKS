@@ -9,6 +9,7 @@ import {
     PARENT_DESTROY_ERROR,
     PARENT_FOLDER_NOT_EXISTS
 } from "./folders.constants";
+import { File } from "../files/files.model";
 
 @Injectable()
 export class FoldersService {
@@ -39,7 +40,7 @@ export class FoldersService {
             throw new BadRequestException(ACCESS_DENIED_ERROR);
         }
         const childrenFolders = await this.findChildrenFolders(folderId)
-        return { folder: folder, childrenFolders: childrenFolders };
+        return { folder, childrenFolders };
     }
 
     async deleteFolder(folderId: number, userId: number) {
@@ -77,7 +78,7 @@ export class FoldersService {
     }
 
     async getFolderById(folderId: number) {
-        return await this.folderModel.findOne({where: {id: folderId}})
+        return await this.folderModel.findOne({where: {id: folderId}, include: {model: File} })
     }
 
     async getFoldersById(folderId: number) {
@@ -85,7 +86,7 @@ export class FoldersService {
     }
 
     async findChildrenFolders(folderId: number) {
-        return await this.folderModel.findAll({where: {parentId: folderId}});
+        return await this.folderModel.findAll({where: {parentId: folderId}, include: {model: File}});
     }
 
     async createFolderDb(dto: FolderCreateDto, userId: number) {

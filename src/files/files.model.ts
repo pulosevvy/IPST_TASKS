@@ -20,7 +20,7 @@ export class File extends Model<File, FileAttributes> {
     @Column({type: DataType.STRING, allowNull: false})
     name: string;
 
-    @ApiProperty({example: '{site}/static/ya_v_anape_2007.jpg', description: 'Путь до файла в файловой системе'})
+    @ApiProperty({example: '{site}/uploads/ya_v_anape_2007.jpg', description: 'Путь до файла в файловой системе'})
     @Column({type: DataType.STRING, allowNull: false})
     filepath: string;
 
