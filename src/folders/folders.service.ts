@@ -7,7 +7,7 @@ import {
     ACCESS_DENIED_ERROR,
     FOLDER_NOT_FOUND_ERROR,
     PARENT_DESTROY_ERROR,
-    PARENT_FOLDER_NOT_EXISTS
+    PARENT_FOLDER_NOT_EXISTS, UPDATE_ROOT_FOLDER_ERROR
 } from "./folders.constants";
 import { File } from "../files/files.model";
 import { FolderUpdateDto } from "./dto/folder-update.dto";
@@ -46,6 +46,9 @@ export class FoldersService {
         if(!folder || folder.userId !== userId) {
             throw new BadRequestException(FOLDER_NOT_FOUND_ERROR);
         }
+        if(folder.name == 'root') {
+            throw new BadRequestException(UPDATE_ROOT_FOLDER_ERROR);
+        }
         await this.updateFolderDb(id, dto);
         const updated = await this.getFolderById(id);
         return updated;
@@ -68,11 +71,8 @@ export class FoldersService {
 
     private async validateParentFolder(parentId: number, userId: number) {
         const parentFolder = await this.getFolderById(parentId);
-        if (!parentFolder) {
+        if (!parentFolder || parentFolder.userId !== userId) {
             throw new BadRequestException(PARENT_FOLDER_NOT_EXISTS);
-        }
-        if(parentFolder.userId !== userId) {
-            throw new BadRequestException(ACCESS_DENIED_ERROR);
         }
         return parentFolder;
     }

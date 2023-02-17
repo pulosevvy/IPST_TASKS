@@ -18,11 +18,8 @@ export class FilesService {
 
     async createFile(dto: CreateFileDto, userId: number, file: any) {
          const folder = await this.folderService.getFolderById(dto.folderId);
-         if(!folder) {
+         if(!folder || folder.userId !== userId) {
              throw new BadRequestException(FOLDER_NOT_FOUND_ERROR);
-         }
-         if(folder.userId !== userId) {
-             throw new BadRequestException(ACCESS_DENIED_ERROR);
          }
         const files = await this.uploadFile(file);
         return await this.createFileDb(dto, files.fileName, files.filepath);
